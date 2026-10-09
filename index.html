@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#10131a">
+<title>Forge Engineering — Software Hub</title>
+<style>
+:root {
+  color-scheme: dark;
+  --bg:#10131a; --panel:#191e28; --line:#2b3240;
+  --text:#f1f4fa; --muted:#9aa6ba; --blue:#70a7ff;
+}
+* { box-sizing:border-box }
+body {
+  margin:0; background:var(--bg); color:var(--text);
+  font:15px/1.6 "Segoe UI",Arial,sans-serif;
+}
+a { color:inherit; text-decoration:none }
+button,input { font:inherit }
+button { cursor:pointer }
+header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:18px max(5%,calc((100% - 1180px)/2));
+  border-bottom:1px solid var(--line); gap:20px;
+}
+.brand { font-size:21px; font-weight:800; letter-spacing:-.5px }
+.brand span { color:var(--blue) }
+.tag { color:var(--muted); font-size:12px }
+main { max-width:1180px; margin:auto; padding:48px 22px }
+.hero { max-width:760px; padding:25px 0 35px }
+.eyebrow { color:var(--blue); font-weight:700; letter-spacing:2px }
+h1 { font-size:clamp(35px,6vw,62px); line-height:1.08;
+     letter-spacing:-2px; margin:12px 0 18px }
+h2 { letter-spacing:-.5px }
+p { color:var(--muted) }
+.search {
+  display:flex; gap:10px; margin-top:26px; max-width:650px;
+}
+input {
+  min-width:0; flex:1; background:var(--panel); color:var(--text);
+  border:1px solid var(--line); border-radius:10px; padding:14px;
+}
+.btn {
+  display:inline-flex; align-items:center; justify-content:center;
+  padding:11px 16px; border-radius:9px; border:1px solid var(--line);
+  background:var(--panel); color:var(--text); font-weight:650;
+}
+.btn.primary { background:var(--blue); color:#0d1627; border-color:var(--blue) }
+.btn:disabled { opacity:.45; cursor:not-allowed }
+.filters { display:flex; flex-wrap:wrap; gap:8px; margin:22px 0 }
+.filters button { color:var(--muted) }
+.filters button.active { color:var(--text); border-color:var(--blue) }
+.section-head {
+  display:flex; justify-content:space-between; align-items:center;
+  gap:15px; flex-wrap:wrap;
+}
+.grid {
+  display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:17px;
+}
+.card {
+  background:var(--panel); border:1px solid var(--line);
+  border-radius:15px; padding:21px; min-width:0;
+  display:flex; flex-direction:column; gap:12px;
+  transition:transform .18s,border-color .18s;
+}
+.card:hover { transform:translateY(-3px); border-color:#5979a8 }
+.app-icon {
+  width:51px; height:51px; display:grid; place-items:center;
+  border:1px solid var(--line); border-radius:13px;
+  background:#222c3d; font-size:25px;
+}
+.card h3 { margin:0; font-size:19px }
+.card p { margin:0; min-height:48px }
+.card .btn { margin-top:auto }
+.meta { color:var(--muted); font-size:12px }
+.status {
+  display:inline-block; width:fit-content; border:1px solid var(--line);
+  border-radius:30px; padding:3px 9px; color:var(--muted); font-size:11px;
+}
+.empty { padding:35px; text-align:center; color:var(--muted) }
+#detail {
+  background:var(--panel); border:1px solid var(--line);
+  padding:clamp(22px,5vw,45px); border-radius:18px;
+}
+footer {
+  border-top:1px solid var(--line); margin-top:60px;
+  padding:25px 20px; text-align:center; color:var(--muted);
+  font-size:12px;
+}
+[hidden] { display:none !important }
+@media(max-width:800px) {
+  .grid { grid-template-columns:repeat(2,minmax(0,1fr)) }
+}
+@media(max-width:540px) {
+  .grid { grid-template-columns:1fr }
+  header { padding:15px 20px }
+  main { padding:25px 17px }
+  .search { flex-direction:column }
+}
+</style>
+</head>
+<body>
+<header>
+  <a class="brand" href="index.html">FORGE<span> / </span>ENGINEERING</a>
+  <span class="tag">DESIGN. SIMULATE. BUILD.</span>
+</header>
+
+<main>
+<section id="catalog">
+  <div class="hero">
+    <div class="eyebrow">YOUR ENGINEERING WORKSPACE</div>
+    <h1>Engineering tools.<br>One home.</h1>
+    <p>
+      Discover engineering applications for mechanical design,
+      simulation, buildings, electronics and manufacturing.
+    </p>
+    <div class="search">
+      <input id="search" type="search"
+        placeholder="Search software, tools or disciplines..."
+        aria-label="Search software">
+      <button class="btn primary" id="searchBtn">Search</button>
+    </div>
+  </div>
+
+  <div class="section-head">
+    <h2>Explore software</h2>
+    <span class="meta" id="count"></span>
+  </div>
+  <div class="filters" id="filters"></div>
+  <div class="grid" id="apps"></div>
+  <div class="empty" id="empty" hidden>No matching software found.</div>
+</section>
+
+<section id="detail" hidden></section>
+</main>
+
+<footer>
+  FORGE ENGINEERING · Independent engineering software platform
+  <br>Windows 10 / 11 · Free and open-source technologies where suitable
+</footer>
+
+<script>
+const products = [
+  {
+    id:"mechanical-cad", name:"Forge CAD",
+    icon:"⬡", category:"Mechanical",
+    description:"A home for 2D drafting, 3D parts, assemblies and engineering drawings.",
+    features:["2D drafting","3D modeling","Assemblies","Technical drawings"],
+    status:"Planned", version:"Not released", release:null
+  },
+  {
+    id:"simulation", name:"Forge Sim",
+    icon:"◈", category:"Simulation",
+    description:"A future workspace for structural, thermal and engineering simulations.",
+    features:["Structural analysis","Thermal analysis","Mesh tools","Results viewer"],
+    status:"Planned", version:"Not released", release:null
+  },
+  {
+    id:"civil-bim", name:"Forge Build",
+    icon:"▦", category:"Civil & BIM",
+    description:"Building plans, structural coordination and BIM workflows.",
+    features:["Building layouts","3D building models","Project coordination"],
+    status:"Planned", version:"Not released", release:null
+  },
+  {
+    id:"electrical", name:"Forge Circuit",
+    icon:"⌁", category:"Electrical",
+    description:"Electrical schematics, circuit design and electronics workflows.",
+    features:["Circuit diagrams","Schematic editor","Component libraries"],
+    status:"Planned", version:"Not released", release:null
+  },
+  {
+    id:"pcb", name:"Forge PCB",
+    icon:"▤", category:"Electronics",
+    description:"A dedicated home for electronic board layout and design tools.",
+    features:["PCB layout","Footprints","Design rule checks"],
+    status:"Planned", version:"Not released", release:null
+  },
+  {
+    id:"manufacturing", name:"Forge CAM",
+    icon:"⚙", category:"Manufacturing",
+    description:"Manufacturing workflows, toolpaths and CNC planning.",
+    features:["Toolpath planning","Manufacturing setup","Export workflows"],
+    status:"Planned", version:"Not released", release:null
+  }
+];
+
+const categories = [
+  "All", "Mechanical", "Simulation", "Civil & BIM",
+  "Electrical", "Electronics", "Manufacturing"
+];
+let active = "All";
+
+const $ = id => document.getElementById(id);
+const esc = value => String(value).replace(/[&<>"']/g, c => ({
+  "&":"&amp;", "<":"&lt;", ">":"&gt;",
+  '"':"&quot;", "'":"&#39;"
+}[c]));
+
+function renderFilters() {
+  $("filters").innerHTML = categories.map(c =>
+    `<button class="btn ${active===c?"active":""}"
+      data-category="${esc(c)}">${esc(c)}</button>`
+  ).join("");
+}
+
+function renderApps() {
+  const query = $("search").value.trim().toLowerCase();
+  const shown = products.filter(p =>
+    (active==="All" || p.category===active) &&
+    [p.name,p.category,p.description,...p.features]
+      .join(" ").toLowerCase().includes(query)
+  );
+
+  $("count").textContent = `${shown.length} applications`;
+  $("empty").hidden = shown.length !== 0;
+  $("apps").innerHTML = shown.map(p => `
+    <article class="card">
+      <div class="app-icon">${p.icon}</div>
+      <span class="status">${esc(p.status)}</span>
+      <h3>${esc(p.name)}</h3>
+      <div class="meta">${esc(p.category)}</div>
+      <p>${esc(p.description)}</p>
+      <a class="btn" href="?app=${encodeURIComponent(p.id)}">Explore app →</a>
+    </article>
+  `).join("");
+}
+
+function showCatalog() {
+  $("catalog").hidden = false;
+  $("detail").hidden = true;
+  history.replaceState(null,"",location.pathname);
+  renderApps();
+}
+
+function showDetail(id) {
+  const p = products.find(item => item.id === id);
+  if (!p) return showCatalog();
+
+  $("catalog").hidden = true;
+  $("detail").hidden = false;
+
+  const download = p.release
+    ? `<a class="btn primary" href="${esc(p.release)}">Download release</a>`
+    : `<button class="btn primary" disabled>Installer coming later</button>`;
+
+  $("detail").innerHTML = `
+    <a class="btn" href="index.html">← All software</a>
+    <div style="margin-top:30px" class="app-icon">${p.icon}</div>
+    <div class="eyebrow" style="margin-top:20px">${esc(p.category)}</div>
+    <h1 style="font-size:42px">${esc(p.name)}</h1>
+    <p>${esc(p.description)}</p>
+    <span class="status">${esc(p.status)}</span>
+    <h2>Planned capabilities</h2>
+    <ul>${p.features.map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+    <h2>Releases</h2>
+    <p>Version: ${esc(p.version)}</p>
+    <p>Windows 10 / 11 · 64-bit builds planned</p>
+    ${download}
+    <p class="meta" style="margin-top:25px">
+      Downloads will be enabled after a real application build is published.
+    </p>
+  `;
+}
+
+$("filters").addEventListener("click", e => {
+  const button = e.target.closest("[data-category]");
+  if (!button) return;
+  active = button.dataset.category;
+  renderFilters();
+  renderApps();
+});
+$("search").addEventListener("input", renderApps);
+$("searchBtn").addEventListener("click", renderApps);
+
+renderFilters();
+renderApps();
+
+const requested = new URLSearchParams(location.search).get("app");
+if (requested) showDetail(requested);
+</script>
+</body>
+</html>
