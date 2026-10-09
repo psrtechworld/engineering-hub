@@ -142,12 +142,13 @@ footer {
 
 <script>
 const products = [
-  {
+   {
     id:"mechanical-cad", name:"Forge CAD",
     icon:"⬡", category:"Mechanical",
-    description:"A home for 2D drafting, 3D parts, assemblies and engineering drawings.",
-    features:["2D drafting","3D modeling","Assemblies","Technical drawings"],
-    status:"Planned", version:"Not released", release:null
+    description:"A lightweight parametric 3D CAD tool for Windows. Create solids, view in 3D, export to STL.",
+    features:["3D viewport","Box & Cylinder","STL export","Rotate / Zoom / Pan"],
+    status:"v0.1 Released", version:"v0.1",
+    release:"https://github.com/psrtechworld/engineering-hub/releases/download/forge-cad-v0.1/ForgeCAD-v0.1-Windows-x64.zip"
   },
   {
     id:"simulation", name:"Forge Sim",
@@ -241,8 +242,8 @@ function showDetail(id) {
   $("catalog").hidden = true;
   $("detail").hidden = false;
 
-  const download = p.release
-    ? `<a class="btn primary" href="${esc(p.release)}">Download release</a>`
+   const download = p.release
+    ? `<a class="btn primary" href="${esc(p.release)}" target="_blank">⬇ Download for Windows (v0.1)</a>`
     : `<button class="btn primary" disabled>Installer coming later</button>`;
 
   $("detail").innerHTML = `
